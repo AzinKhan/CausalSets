@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 
 Causal set calculations.
@@ -5,12 +7,10 @@ Causal set calculations.
 TO DO: Break up larger functions
 
 '''
-import numpy as np
-import scipy.linalg as linalg
-from scipy.stats import gaussian_kde
-import sys
 import time
 import argparse
+import numpy as np
+import scipy.linalg as linalg
 thresh = 0.000000000000001
 
 def getkey(item):
@@ -74,7 +74,7 @@ class CausalSet(object):
         tcoords = []
         square = self.square
         tmax = max(square[1])
-        for i,s in enumerate(square[0]):
+        for i, s in enumerate(square[0]):
             x = s
             t = square[1][i]
             if x >= 0 and t > (G*x) and t < (tmax - x):#Top boundary of kite is null line
