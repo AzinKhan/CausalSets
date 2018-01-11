@@ -7,6 +7,7 @@ import scipy.linalg as linalg
 from scipy.stats import gaussian_kde
 import sys
 import time
+import argparse
 thresh = 0.000000000000001
 identify = True
 
@@ -15,6 +16,23 @@ def getkey(item):
     For sorting by time values.
     '''
     return(item[1])
+
+def image(X,Y,Z):
+
+    '''
+    Creates an image array from with XY co-ordinates and associated Z value
+    '''
+
+    xsize = 2*max(X)
+    ysize = max(Y)
+    a = np.zeros((xsize,ysize))
+    for i, x in enumerate(X):
+        xval = int(x + (0.5*xsize))
+        yval = int(Y[i])
+        value = Z[i]
+        a[(xval-1)][(yval-1)] = value
+
+    return a
 
 class CausalSet(object):
 
@@ -199,23 +217,6 @@ class CausalSet(object):
 
         self.Q = Q
 
-    def image(X,Y,Z):
-
-        '''
-        Creates an image array from with XY co-ordinates and associated Z value
-        '''
-
-        xsize = 2*max(X)
-        ysize = max(Y)
-        a = np.zeros((xsize,ysize))
-        for i, x in enumerate(X):
-            xval = int(x + (0.5*xsize))
-            yval = int(Y[i])
-            value = Z[i]
-            a[(xval-1)][(yval-1)] = value
-
-        return a
-
     def Entropy(self):
         '''
         Take causal matrix and return entropy of space-time as per Sorkin's paper.
@@ -307,8 +308,13 @@ class CausalSet(object):
 if __name__ == '__main__':
     # User input from command line
     tstart = time.time()
-    xsize, tsize, sprinklesize, gradient = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
-    spacetime = CausalSet(xsize, tsize, sprinklesize, gradient)
+    parser = argparse.ArgumentParser("Calculate entanglement entropy of a spacetime")
+    parser.add_argument("-x", metavar="xsize", default=100, help="Maximum value of x co-ordinate. Defaults to 100")
+    parser.add_argument("-t", metavar="tsize", default=100, help="Maximum value of t co-ordinate. Defaults to 100")
+    parser.add_argument("-n", metavar="sprinklesize", default=1000, help="Number of points to be sprinkled. Defaults to 1000")
+    parser.add_argument("-g", metavar="gradient", default=1, help="Gradient of spacetime edge. Defaults to 1 (Minkowski space)")
+    args = parser.parse_args()
+    spacetime = CausalSet(int(args.x), int(args.t), int(args.n), int(args.g))
     spacetime.makekite()
     spacetime.makecausalmatrix()
     spacetime.iSJ()
