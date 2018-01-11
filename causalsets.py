@@ -222,7 +222,7 @@ class CausalSet(object):
         '''
         W = self.Q
         self.iSJ()
-        sjmask, Wmask = self.zeroprojection(self.SJ,W)
+        sjmask, Wmask = self.zeroprojection()
 
         #Now calculate eigenvectors of new
 
@@ -243,14 +243,17 @@ class CausalSet(object):
                 self.entropy += ent 
             
         
-    def zeroprojection(self,sj,W):
+    def zeroprojection(self):
         '''
 
         Function to constrain image of SJ i.e. projects out any vectors with zero eigenvalue.
         Changes representation basis to that of eigenvectors of SJ.
 
         '''
-        evalues, evectors = linalg.eig((sj))
+        sj = self.SJ
+        W = self.Q
+        evalues = self.eigenvalues
+        evectors = self.eigenvectors
         SJeigs = sorted(evalues,reverse=True)
         Weigs = sorted(linalg.eigvals(W),reverse=True)
         shape = sj.shape
@@ -269,7 +272,7 @@ class CausalSet(object):
         evectlist = []
         #Make list of tuples with eigenvalues and associated eigenvectors
         for i, e in enumerate(evalues):
-            tup = (evectors[:,i],e)
+            tup = (evectors[i],e)
             evectlist.append(tup)
         #Sort the eigenvalue/vector list to be in the same order as those in SJ 
         finallist = sorted(evectlist,reverse=True, key=getkey)
