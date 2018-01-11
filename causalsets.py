@@ -1,5 +1,8 @@
 '''
-Sprinkling
+
+Causal set calculations.
+
+TO DO: Break up larger functions
 
 '''
 import numpy as np
@@ -9,7 +12,6 @@ import sys
 import time
 import argparse
 thresh = 0.000000000000001
-identify = True
 
 def getkey(item):
     '''
@@ -36,11 +38,12 @@ def image(X,Y,Z):
 
 class CausalSet(object):
 
-    def __init__(self, xmax, tmax, sprinklenum, gradient):
+    def __init__(self, xmax, tmax, sprinklenum, gradient, identify):
         self.xmax = xmax
         self.tmax = tmax
         self.sprinklenum = sprinklenum
         self.gradient = gradient
+        self.identify = identify
         self.xcoords = []
         self.tcoords = []
         self.ordered = []
@@ -149,7 +152,7 @@ class CausalSet(object):
                 elif x2 == x1:
                     C[i][k] = 1
                 #Extra part for identification of edges.
-                if identify:
+                if self.identify:
                     if x2 != (-1*xint) and (t2-t1)/(x2-(-1*xint)) >= 1:
                         C[i][k] = 1
                         
@@ -313,14 +316,15 @@ if __name__ == '__main__':
     parser.add_argument("-t", metavar="tsize", default=100, help="Maximum value of t co-ordinate. Defaults to 100")
     parser.add_argument("-n", metavar="sprinklesize", default=1000, help="Number of points to be sprinkled. Defaults to 1000")
     parser.add_argument("-g", metavar="gradient", default=1, help="Gradient of spacetime edge. Defaults to 1 (Minkowski space)")
+    parser.add_argument("--identify", metavar="identify", default=False, help="Boolean to identify edges of spacetime")
     args = parser.parse_args()
-    spacetime = CausalSet(int(args.x), int(args.t), int(args.n), int(args.g))
+    spacetime = CausalSet(int(args.x), int(args.t), int(args.n), int(args.g), args.identify)
     spacetime.makekite()
     spacetime.makecausalmatrix()
     spacetime.iSJ()
     spacetime.eigenvalue()
     spacetime.SJWhight()
     spacetime.Entropy()
-    print 'Entropy:', spacetime.entropy
     tend = time.time() - tstart
+    print 'Entropy:', spacetime.entropy
     print 'Calculation time:', tend, 'seconds'
